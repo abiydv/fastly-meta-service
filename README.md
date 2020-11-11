@@ -14,49 +14,63 @@ The response can be easily modified to suit any use-case.
 
 1. Export `FASTLY_API_KEY`
    ```
-   export FASTLY_API_KEY=aabbccdd_01234
+   $ export FASTLY_API_KEY=aabbccdd_01234
    ````
 
 1. Initialize `terraform` and check plan
    ```
-   terraform init
-   terraform plan
+   $ terraform init
+   $ terraform plan
    ````
 
-1. Apply plan to create the Fastly service
+1. Apply plan, type `yes` when prompted, to create the Fastly service
    ```
-   terraform apply
+   $ terraform apply
 
-   $ Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+   Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+   Outputs:
+
+   service_domain = meta.dane-example.com
+   shared_service_domain = meta.dane-example.com.global.prod.fastly.net
+
    ````
 
 ## **TEST**
 
-Hit the Fastly service on the shared domain to see the output
+Once the service is deployed, give it a minute or so, and then test using the `shared_service_domain`.
 
-```
-curl http://xyz.
+1. Basic output
+   ```
+   $ curl http://meta.dane-example.com.global.prod.fastly.net
+   Public IP: 192.168.1.1
+   ```
+1. Detailed output
+   ```
+   $ curl http://meta.dane-example.com.global.prod.fastly.net/more
+   Public IP: 192.168.1.1 | City: LONDON | Country: GB | FServer: cache-xyz123 | FDC: LHR
+   ```
 
-```
+   ** Have masked the real outputs above.
 
 ## **CLEANUP**
 
 1. Export `FASTLY_API_KEY`
    ```
-   export FASTLY_API_KEY=aabbccdd_01234
+   $ export FASTLY_API_KEY=aabbccdd_01234
    ````
 
 2. Delete the Fastly service
    ```
-   terraform destroy
+   $ terraform destroy
 
-   $ Apply complete! Resources: 0 added, 0 changed, 3 destroyed.
+   Destroy complete! Resources: 2 destroyed.
    ````
-
-
 
 ## **NOTE** ##
 This is a test/proof-of-concept. There are some configs to make it quick, which should be removed before actual implementation.
 
-1. Adding the Fastly shared domain fastly-bdd-example.com.global.prod.fastly.net in [feature files](tests/featues).
+1. Update the domain - use a domain you own
+2. Add appropriate CNAME entries to map the traffic to Fastly
+3. Add a cert (either Fastly managed or self managed) to the HTTPS console on Fastly
 
