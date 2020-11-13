@@ -48,7 +48,12 @@ Once the service is deployed, give it a minute or so, and then test using the `s
 1. Detailed output
    ```
    $ curl http://meta.dane-example.com.global.prod.fastly.net/more
-   Public IP: 192.168.1.1 | City: LONDON | Country: GB | FServer: cache-xyz123 | FDC: LHR
+   Public IP: 192.168.1.1 | City: LONDON | Country: GB | User-Agent: curl/7.73.0 | FServer: cache-xyz123 | FDC: LHR
+   ```
+1. Single output, IP only - may be useful for use with command line tools
+   ```
+   $ curl http://meta.dane-example.com.global.prod.fastly.net/ip
+   192.168.1.1
    ```
 
    ** Have masked the real outputs above.
