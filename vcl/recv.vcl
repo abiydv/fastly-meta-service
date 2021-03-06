@@ -1,19 +1,21 @@
-unset req.http.Cookie;
-
-if (req.url ~ "^/$" ){
-  set req.http.synthetic_resp = "Public IP: " + req.http.Fastly-Client-IP;
-  error 620;
+if (!req.url.path ~ "^/$" || !req.http.Fastly-SSL){
+  error 618;
 }
 
-if (req.url ~ "^/more$" ){
-  set req.http.synthetic_resp = "Public IP: " + req.http.Fastly-Client-IP + " | City: " + std.toupper(client.geo.city) + " | Country: " + client.geo.country_code + " | User-Agent: " + req.http.user-agent + " | FServer: " + server.hostname + " | FDC: " + server.datacenter;
-  error 620;
+set req.url = querystring.filter_except(req.url, "ip");
+
+if (fastly.ff.visits_this_service == 0 && req.restarts == 0) {
+  set req.http.Fastly-Client-IP = client.ip;
+  set req.http.ipv6 = "false";
+  if (req.is_ipv6){
+    set req.http.ipv6 = "true";
+  }
 }
 
-if (req.url ~ "^/ip$" ){
-  set req.http.synthetic_resp = req.http.Fastly-Client-IP;
-  error 620;
+if (req.url.qs ~ "ip"){
+  set req.http.Fastly-Client-IP = querystring.get(req.url, "ip");
+  set client.geo.ip_override = req.http.Fastly-Client-IP;
+  set geoip.ip_override = req.http.Fastly-Client-IP;
 }
 
-set req.http.synthetic_resp = "Not Found!";
-error 644;
+error 620;

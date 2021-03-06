@@ -1,8 +1,12 @@
-# **Fastly Meta Service**
+# **Fastly Geo Service**
 
-Implement a simple service that returns your public ip, geo-location etc. The data stays completely within your environment/Fastly service and there is no risk of attracting any unwanted attention if you use many freely available such services.
+Implement a simple service that returns your public ip, geo-location etc. The data stays completely within your environment/Fastly service and there is no risk of attracting any unwanted attention if you use any of the many freely available services.
 
 The response can be easily modified to suit any use-case.
+
+Previous post: https://abiydv.github.io/posts/fastly-meta-service/
+
+Geo Service post: https://abiydv.github.io/posts/fastly-geo-service/
 
 
 ## **REQUIRMENTS**
@@ -40,23 +44,46 @@ The response can be easily modified to suit any use-case.
 
 Once the service is deployed, give it a minute or so, and then test using the `shared_service_domain`.
 
-1. Basic output
+1. Check your own IP details
    ```
-   $ curl http://meta.dane-example.com.global.prod.fastly.net
-   Public IP: 192.168.1.1
-   ```
-1. Detailed output
-   ```
-   $ curl http://meta.dane-example.com.global.prod.fastly.net/more
-   Public IP: 192.168.1.1 | City: LONDON | Country: GB | User-Agent: curl/7.73.0 | FServer: cache-xyz123 | FDC: LHR
-   ```
-1. Single output, IP only - may be useful for use with command line tools
-   ```
-   $ curl http://meta.dane-example.com.global.prod.fastly.net/ip
-   192.168.1.1
+   $ curl -k https://meta.dane-example.com.global.prod.fastly.net/
+   {
+      "date": "Fri, 05 Mar 2021 16:23:53 GMT",
+      "ipv6": "false",
+      "public_ip": "34.66.60.237",
+      "de_city": "HUISSEN",
+      "de_country": "NL",
+      "de_continent": "EU",
+      "de_proxy" : "HOSTING - VPN",
+      "mx_city": "COUNCIL BLUFFS",
+      "mx_country": "US",
+      "mx_continent": "NA"
+   }
    ```
 
-   ** Have masked the real outputs above.
+1. Check explicitly for an IP -
+   ```
+   $ curl -k https://meta.dane-example.com.global.prod.fastly.net/?ip=8.8.8.8 
+   {
+      "date": "Fri, 05 Mar 2021 16:23:53 GMT",
+      "ipv6": "false",
+      "public_ip": "8.8.8.8",
+      "de_city": "MOUNTAIN VIEW",
+      "de_country": "US",
+      "de_continent": "NA",
+      "de_proxy" : "ANONYMOUS - ?",
+      "mx_city": "NEW YORK",
+      "mx_country": "US",
+      "mx_continent": "NA"
+   }
+   ```
+
+1. Combine with `jq` to get specific details
+   ```
+   $ curl -k https://meta.dane-example.com.global.prod.fastly.net/ -s | jq -r .public_ip
+   34.66.60.237
+   ```
+
 
 ## **CLEANUP**
 
